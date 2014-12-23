@@ -1,3 +1,5 @@
 <?php
-define('ROOT',dirname(__FILE__));
-echo ROOT;
+require('Lib/Hana/Application.php');
+$application = new Hana_Application();
+$application->appPath(ROOT);
+$application->run();

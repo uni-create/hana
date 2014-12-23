@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<structures layout="Default" outline="Default" theme="default" exception="Exception" hooks="Default">
+  <meta title="root"/>
+  <File name="Index">
+    <meta title="top page" description="top page desctiption" keyword="top page keywords"/>
+    <params>
+      <param property="page_id" value="1"/>
+    </params>
+  </File>
+</structures>
