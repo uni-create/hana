@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<outlines>
+  <HEADER>
+    <parts name="Header"></parts>
+  </HEADER>
+  <NAV>
+    <parts name="Nav"></parts>
+  </NAV>
+  <LEFT>
+	<parts name="Contents"></parts>
+	<parts name="Rss"></parts>
+  </LEFT>
+  <RIGHT>
+	<parts name="Side"></parts>
+  </RIGHT>
+  <FOOTER>
+    <parts name="Footer"></parts>
+  </FOOTER>
+  <CSS/>
+  <SCRIPT/>
+</outlines>

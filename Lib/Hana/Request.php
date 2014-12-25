@@ -2,13 +2,28 @@
 class Hana_Request
 {
 	private $query = null;
+	private $urls = array();
 	
 	public function __construct(){
 		$req = 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
-		$this->query = strtr($req,array(BASE=>null));
+		$this->query = $this->formatUrl(strtr($req,array(BASE=>null)));
+		$this->urls = $this->parseUrl($this->query);
+	}
+	public function getDefault($query=null){
+		if($query){
+			return $this->formatUrl($query);
+		}else{
+			return $this->query;
+		}
+	}
+	public function getDefaultUrls($query=null){
+		if($query){
+			return $this->parseUrl($query);
+		}else{
+			return $this->urls;
+		}
 	}
 	public function formatUrl($query=null){
-		
 		$urls = $this->parseUrl($query);
 		$url = BASE;
 		if($urls['directories']) $url .= join('/',$urls['directories']).'/';
@@ -20,12 +35,13 @@ class Hana_Request
 				$url .= $name.'='.$q;
 			}
 		}
-		return $url;
+		return strtolower($url);
 	}
-	public function parseUrl($query){
-		$query = $query ? strtr($query,array(BASE=>null)) : $this->query;
+	public function parseUrl($query=null){
+		$query = $query ? strtr($query,array(BASE=>null)) : null;
 		$info = parse_url($query);
 		$paths = preg_split('/\//',$info['path']);
+		$paths = array_map('ucfirst',$paths);
 		$file = array_pop($paths);
 		$ex = null;
 		if($file){
@@ -41,7 +57,7 @@ class Hana_Request
 		$urls['file'] = $file;
 		$urls['extension'] = $ex;
 		$urls['queries'] = array();
-		if($info['query']){
+		if(!empty($info['query'])){
 			$queries = preg_split('/\&/',$info['query']);
 			while($queries){
 				$qs = preg_split('/=/',array_shift($queries));

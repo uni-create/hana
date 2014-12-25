@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<hooks>
+<hook name="Settings"></hook>
+<hook module="Account" name="Settings"></hook>
+</hooks>

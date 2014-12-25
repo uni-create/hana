@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Directory name="Root" layout="Default" outline="Default" theme="default" exception="Exception" hook="Default">
+  <meta title="root"/>
+  <File name="Index">
+    <meta title="top page" description="top page desctiption" keyword="top page keywords"/>
+    <params>
+      <param property="page_id" value="1"/>
+    </params>
+  </File>
+  <Directory name="Admin" direct="Account">
+    <meta title="top page" description="top page desctiption" keyword="top page keywords"/>
+    <params>
+      <param property="page_id" value="1"/>
+    </params>
+	  <File name="Params" exception="Exception2">
+		<meta title="top page" description="top page desctiption" keyword="top page keywords"/>
+		<params>
+		  <param property="page_id" value="1"/>
+		  <param property="page_id" value="1"/>
+		</params>
+	  </File>
+  </Directory>
+</Directory>

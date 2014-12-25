@@ -5,7 +5,7 @@ class Hana_Loader
 	private $paths = array();
 	
 	private function __construct(){
-		spl_autoload_register(array(self,'auto'));
+		spl_autoload_register(array($this,'auto'));
 	}
 	public static function get(){
 		if(self::$instance == null) self::$instance = new self;

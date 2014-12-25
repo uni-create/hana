@@ -16,15 +16,16 @@ class Hana_Xml_Reader
 			$reader = new XMLReader();
 			$reader->open($path,null,$this->libxml);
 			$this->reader = $reader;
+			$this->parse();
 			return true;
 		}else{
 			return false;
 		}
 	}
-	public function parse(){
+	public function parse($return=false){
 		$data = array();
 		if($this->reader){
-			$data = $this->parseLoop($reader,$data);
+			$this->parseLoop($this->reader,$data);
 		}
 		$this->data = $data;
 	}

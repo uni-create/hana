@@ -1,0 +1,4 @@
+<h1>load parts test.(Contents.php)</h1>
+<?php
+$this->view->render();
+?>
