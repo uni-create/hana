@@ -16,48 +16,48 @@ class Hana_Project
 		global $request;
 		$request = $this->request;
 		
-		$urls = $this->request->parseUrl($this->request->getDefault($query));
-		$params = $this->router->getParams($this->request);
-		// var_dump($params);
+		global $router;
+		$router = $this->router;
 		
+		$urls = $this->request->parseUrl($this->request->getDefault($query));
+		$this->router->init($this->request);
+		
+		$hooks = $this->router->getHookSet();
 		//run hooks
 		// var_dump($params);
-		foreach($params['hookNames'] as $hookName){
+		foreach($hooks as $hookName){
 			$h = new $hookName();
-			if(method_exists($h,'beforeRoute')) $h->beforeRoute($params);
-		}
-		$control = $this->router->getControl($params);
-		
-		foreach($params['hookNames'] as $hookName){
-			$h = new $hookName();
-			if(method_exists($h,'afterRoute')) $h->afterRoute($control);
+			if(method_exists($h,'beforeRoute')) $h->beforeRoute();
 		}
 		
 
 		global $layout;
 		global $view;
 		$view = new Hana_View();
-		$view->setParams($control);
+		$view->setRoute();
 		
 		$layout = new Hana_View_Layout();
-		$layout->setParams($control);
+		$layout->setRoute();
+		$layout->init();
+		
+		$control = $this->router->getControlSet();
 		
 
-		if(!empty($control['controller']['path'])){
-			if(file_exists($control['controller']['path'])){
-				$controller = $this->getController($control['controller']['name']);
-				$action = $control['controller']['action'];
+		if(!empty($control['path'])){
+			if(file_exists($control['path'])){
+				$controller = $this->getController($control['name']);
+				$action = $control['action'];
 				if(method_exists($controller,$action)){
 					$res = $controller->$action();
 				}
 			}
 		}
-		
-		if(!$view->isExists() && !$view->isRender()){
-			var_dump($control['exception']);
+
+		if(!$view->isExists() && $view->isRender()){
+			$exParams = $router->getExceptionSet();
+			$view->setPath($exParams['path']);
 		}
-		
-		$layout->setView($view);
+		// var_dump($layout);
 		$layout->render();
 	}
 	public function getModule($moduleName){

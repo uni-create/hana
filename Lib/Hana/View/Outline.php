@@ -8,18 +8,14 @@ class Hana_View_Outline extends Hana_View
 	public function __construct(){
 		$this->tmp = new Hana_View_Parts();
 	}
-	public function setParams($params){
-		$this->dir = $params['dir'];
-		$this->parts_dir = $params['parts']['dir'];
+	public function setRoute(){
+		// $this->router = $router;
+		global $router;
+		$params = $router->getPartsSet();
+		$this->parts_dir = $params['dir'];
 	}
 	public function setName($name){
 		$this->name = $name;
-	}
-	public function setView($view){
-		$this->view = $view;
-		foreach($this->parts as $part){
-			$part->setView($view);
-		}
 	}
 	public function getParts($partsName){
 		foreach($this->parts as $part){
@@ -36,6 +32,7 @@ class Hana_View_Outline extends Hana_View
 	}
 	public function setParts($parts){
 		$tmp = $this->tmp;
+		$tmp->setRoute();
 		$ps = array();
 		foreach($parts as $part){
 			$p = clone $tmp;
@@ -46,6 +43,7 @@ class Hana_View_Outline extends Hana_View
 		$this->parts = $ps;
 	}
 	public function render(){
+		global $view;
 		foreach($this->parts as $part){
 			$part->render();
 		}

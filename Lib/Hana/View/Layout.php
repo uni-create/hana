@@ -8,36 +8,37 @@ class Hana_View_Layout extends Hana_View
 	public function __construct(){
 		$this->tmp = new Hana_View_Outline();
 	}
-	public function setParams($params){
-		$this->setPath($params['theme']['local']['layout']['path']);
-		$this->setData('meta',$params['data']['meta']);
-		// var_dump($params);
-		$this->setSource($this->getFileSource());
-		$this->setOutlines($params['theme']['local']['layout']['outline']);
+	public function setRoute(){
+		// $this->router = $router;
+		global $router;
+		$params = $router->getLayoutSet();
+		$this->setPath($params['path']);
+		// var_dump($params['path']);
 	}
-	public function setView($view){
-		$this->view = $view;
-		foreach($this->outlines as $outline){
-			$outline->setView($view);
-		}
+	public function init(){
+		global $router;
+		$meta = $router->getMeta();
+		// $meta = $this->router->getMeta();
+		$this->setData('meta',$meta);
+		$this->setSource($this->getFileSource());
+		
+		// $outlines = $this->router->getOutlineSet();
+		$outlines = $router->getOutlineSet();
+		$this->setOutlines($outlines);
 	}
 	private function setOutlines($outline){
 		$dir = $outline['dir'];
 		$tmp = $this->tmp;
-		$tmp->setParams($outline);
+		$tmp->setRoute();
 		$outlines = array();
-		// var_dump($this->source);
 		foreach($outline['outlines'] as $reg => $parts){
 			$this->addReg('LOAD_'.$reg);
 			$otc = clone $tmp;
-			
 			$otc->setName($reg);
 			$otc->setParts($parts);
 			$outlines['LOAD_'.$reg] = $otc;
 		}
 		$this->outlines = $outlines;
-		// var_dump($this);
-		// $this->render();
 	}
 	public function addReg($reg){
 		if(!in_array($reg,$this->regs)){
@@ -54,7 +55,8 @@ class Hana_View_Layout extends Hana_View
 		$this->outlines[$on] = $outline;
 	}
 	public function render(){
-		if($this->render){
+		global $view;
+		if($this->render && $this->exists){
 			$strs = array();
 			foreach($this->regs as $key => $reg){
 				$strs['{'.$reg.'}'] = '<?php $this->outlines["'.$reg.'"]->render();?>';
@@ -63,7 +65,8 @@ class Hana_View_Layout extends Hana_View
 			// var_dump($this->source);
 			$this->renderSource();
 		}else{
-			$this->view->render();
+			global $view;
+			$view->render();
 		}
 	}
 }

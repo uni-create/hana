@@ -1,5 +1,5 @@
 <?php
-class Main_Controller_IndexController extends Hana_Controller
+class Default_Controller_IndexController extends Hana_Controller
 {
 	public function Index(){
 		global $view;

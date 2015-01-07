@@ -67,6 +67,8 @@ class Hana_Xml_Structure extends Hana_Xml_Reader
 			$murls = $request->parseUrl(join('/',$joints));
 			$data['attributes']['direct'] = array('name'=>$module,'urls'=>$murls,'type'=>'direct','params'=>$defPaths);
 		}
+		if(empty($data['attributes']['doc'])) $data['attributes']['doc'] = null;
+		$data['attributes']['doc'] = $request->parseUrl($data['attributes']['doc']);
 		return $data;
 	}
 	protected function searchLoop($tree,$directories,$file,&$data=array()){

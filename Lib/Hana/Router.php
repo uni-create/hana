@@ -1,28 +1,37 @@
 <?php
 class Hana_Router
 {
-	protected $main = array();
+	protected $project = array();
 	protected $module = array();
 	protected $settings = array();
-	protected $parts = array();
-	protected $theme = array();
 	
 	public function __construct(){
-		$main = array();
-		$main['dir'] = APP.DIRECTORY_SEPARATOR.'Main';
-		$this->main = $main;
-		Hana_Loader::addPath('Main',$main['dir']);
+		$projects = array();
+		$projects['dir'] = APP.DIRECTORY_SEPARATOR.'Project';
+		
+		$dir = new Hana_Resource_Directory();
+		$ds = $dir->setPath($projects['dir'])->scan();
+		foreach($ds as $key => $names){
+			if($names['type'] == 'directory'){
+				$projects['projects'][$names['name']]['dir'] = $names['path'];
+				$projects['projects'][$names['name']]['parts'] = $names['path'].DIRECTORY_SEPARATOR.'Parts';
+				$projects['projects'][$names['name']]['layout'] = $names['path'].DIRECTORY_SEPARATOR.'Layout';
+				Hana_Loader::addPath($names['name'],$names['path']);
+			}
+		}
+		$this->project = $projects;
 		
 		$module = array();
 		$module['dir'] = APP.DIRECTORY_SEPARATOR.'Module';
 		$module['modules'] = array();
-		$ms = scandir($module['dir']);
-		while($ms){
-			$mod = array_shift($ms);
-			if($mod != '.' && $mod != '..'){
-				$module['modules'][$mod] = $module['dir'].DIRECTORY_SEPARATOR.$mod;
-				Hana_Loader::addPath($mod,$module['modules'][$mod]);
-			}
+
+		$dir = new Hana_Resource_Directory();
+		$ds = $dir->setPath($module['dir'])->scan();
+		
+		while($ds){
+			$mod = array_shift($ds);
+			$module['modules'][$mod['name']] = $mod['path'];
+			Hana_Loader::addPath($mod['name'],$module['modules'][$mod['name']]);
 		}
 		$this->module = $module;
 		
@@ -30,15 +39,11 @@ class Hana_Router
 		$settings['dir'] = APP.DIRECTORY_SEPARATOR.'Settings';
 		$this->settings = $settings;
 		
-		$parts = array();
-		$parts['dir'] = APP.DIRECTORY_SEPARATOR.'Parts';
-		$this->parts = $parts;
-		
-		$theme = array();
-		$theme['dir'] = APP.DIRECTORY_SEPARATOR.'Theme';
-		$this->theme = $theme;
+
 		
 		$this->setStructure();
+		
+		// var_dump($this);
 	}
 	protected function setStructure(){
 		$st = new Hana_Xml_Structure();
@@ -46,14 +51,29 @@ class Hana_Router
 		$st->init();
 		$this->structure = $st;
 	}
-	public function getParams($request){
+	public function init($request){
 		$params = $this->structure->getParams($request);
-		$params['hookNames'] = array();
-		$hook = new Hana_Xml_Hook();
+		$projectName = $params['attributes']['project'];
+		$this->projectSet = $this->project['projects'][$projectName];
+		if(empty($params['attributes']['joint'])) $params['attributes']['joint'] = null;
+		if(empty($params['attributes']['direct'])) $params['attributes']['direct'] = null;
+		if(empty($params['target']['meta'])) $params['target']['meta'] = array('title'=>null,'description'=>null,'keyword'=>null);
+		$this->params = $params;
+		// var_dump($params);
+	}
+	public function getMeta(){
+		return $this->params['target']['meta'];
+	}
+	public function getHookSet(){
+		$hooks = array();
 		$hs = array();
-		foreach($params['attributes']['hook'] as $hname){
-			$hpath = $this->theme['dir'].DIRECTORY_SEPARATOR.$params['attributes']['theme'].DIRECTORY_SEPARATOR.'Hook'.DIRECTORY_SEPARATOR.$hname.'.xml';
-			$h = clone $hook;
+		$hookTmp = new Hana_Xml_Hook();
+		$prjSet = $this->projectSet;
+		$atHooks = $this->params['attributes']['hook'];
+		$layoutName = $this->params['attributes']['layout'];
+		foreach($atHooks as $hname){
+			$hpath = $prjSet['layout'].DIRECTORY_SEPARATOR.$layoutName.DIRECTORY_SEPARATOR.'Hook'.DIRECTORY_SEPARATOR.$hname.'.xml';
+			$h = clone $hookTmp;
 			$h->setPath($hpath);
 			$h->init();
 			$hs = $hs + $h->getData();
@@ -62,91 +82,118 @@ class Hana_Router
 			foreach($hs as $key => $h){
 				if($h['module']){
 					$hname = ucfirst($h['module']).'_Hook_'.ucfirst(strtr($h['path'],array('/'=>'_')));
-				}else{
-					$hname = 'Main_Hook_'.ucfirst(strtr($h['path'],array('/'=>'_')));
+				}elseif($h['project']){
+					$hname = ucfirst($h['project']).'_Hook_'.ucfirst(strtr($h['path'],array('/'=>'_')));
 				}
-				$params['hookNames'][] = $hname;
+				$hooks[] = $hname;
 			}
 		}
-		
-		return $params;
+		return $hooks;
 	}
-	public function getControl($params=array()){
+	public function getExceptionSet(){
+		$params = $this->params;
+		return array(
+			'name' => $params['attributes']['exception'],
+			'path' => $this->projectSet['parts'].DIRECTORY_SEPARATOR.$params['attributes']['exception'].'.php'
+		);
+	}
+	public function getLayoutSet(){
+		$layout = $this->params['attributes']['layout'];
+		$frame = $this->params['attributes']['frame'];
+		return array(
+			'name' => $layout,
+			'dir' => $this->projectSet['layout'].DIRECTORY_SEPARATOR.$layout.DIRECTORY_SEPARATOR.'Frame',
+			'path' => $this->projectSet['layout'].DIRECTORY_SEPARATOR.$layout.DIRECTORY_SEPARATOR.'Frame'.DIRECTORY_SEPARATOR.$frame.'.php',
+		);
+	}
+	public function getControlSet(){
 		$res = array();
-		$res['data'] = array('meta'=>null,'params'=>array(),'path'=>array());
-		if($params['target']){
-			$res['data']['meta'] = $params['target']['meta'];
-			$res['data']['params'] = $params['target']['params'];
-			$res['data']['path'] = $params['path_nodes'];
-		}
-		$res['theme'] = array();
-		$res['theme']['resource'] = array(
-							'name' => $params['attributes']['theme'],
-							'dir' => ROOT.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.$params['attributes']['theme'],
-							'url' => BASE.'src/'.$params['attributes']['theme'].'/'
-						);
+		$params = $this->params;
+		$projectName = $params['attributes']['project'];
+		$prjSet = $this->projectSet;
 		
-						
-		$res['theme']['local']['layout'] = array();
-		$res['theme']['local']['layout'] = array(
-							'name' => $params['attributes']['layout'],
-							'dir' => APP.DIRECTORY_SEPARATOR.'Theme'.DIRECTORY_SEPARATOR.$params['attributes']['theme'].DIRECTORY_SEPARATOR.'Layout',
-							'path' => APP.DIRECTORY_SEPARATOR.'Theme'.DIRECTORY_SEPARATOR.$params['attributes']['theme'].DIRECTORY_SEPARATOR.'Layout'.DIRECTORY_SEPARATOR.$params['attributes']['layout'].'.php',
-						);
-		$res['theme']['local']['layout']['outline'] = array();
-		$res['theme']['local']['layout']['outline'] = array(
-							'name' => $params['attributes']['outline'],
-							'dir' => APP.DIRECTORY_SEPARATOR.'Theme'.DIRECTORY_SEPARATOR.$params['attributes']['theme'].DIRECTORY_SEPARATOR.'Outline',
-							'parts' => array('dir'=>$this->parts['dir']),
-							'path' => APP.DIRECTORY_SEPARATOR.'Theme'.DIRECTORY_SEPARATOR.$params['attributes']['theme'].DIRECTORY_SEPARATOR.'Outline'.DIRECTORY_SEPARATOR.$params['attributes']['outline'].'.xml'
-						);
-		$outlinePath = $res['theme']['local']['layout']['outline']['path'];
-		$outlineReader = new Hana_Xml_Outline();
-		$outlineReader->setPath($outlinePath);
-		$outlineReader->init();
-		$res['theme']['local']['layout']['outline']['outlines'] = $outlineReader->getData();
-		
-		
-		$res['exception'] = array(
-							'name' => $params['attributes']['exception'],
-							'path' => $this->parts['dir'].DIRECTORY_SEPARATOR.$params['attributes']['exception'].'.php'
-						);
-		
-		$res['controller'] = array();
-		if(!empty($params['attributes']['joint']) || !empty($params['attributes']['direct'])){//!$params['target']??
-			$moduleData = !empty($params['attributes']['joint']) ? $params['attributes']['joint'] : $params['attributes']['direct'];
-			if(array_key_exists($moduleData['name'],$this->module['modules'])){
-				$directories = $moduleData['urls']['directories'] ? join('_',$moduleData['urls']['directories']) : 'Index';
-				$ds = $moduleData['urls']['directories'] ? join(DIRECTORY_SEPARATOR,$moduleData['urls']['directories']) : 'Index';
-				$dss = $moduleData['urls']['directories'] ? join(DIRECTORY_SEPARATOR,$moduleData['urls']['directories']).DIRECTORY_SEPARATOR : null;
-				$res['controller'] = array(
-									'name' => $moduleData['name'].'_Controller_'.$directories.'Controller',
-									'path' => $this->module['modules'][$moduleData['name']].DIRECTORY_SEPARATOR.'Controller'.DIRECTORY_SEPARATOR.$ds.'Controller.php',
-									'action' => $moduleData['urls']['file'],
-									'data' => $moduleData['params']
-								);
-				$res['view'] = array(
-									'name' => $moduleData['urls']['file'],
-									'path' => $this->module['modules'][$moduleData['name']].DIRECTORY_SEPARATOR.'View'.DIRECTORY_SEPARATOR.$dss.$moduleData['urls']['file'].'.php',
-								);
+		$moduleData = !empty($params['attributes']['joint']) ? $params['attributes']['joint'] : $params['attributes']['direct'];
+		if(array_key_exists($moduleData['name'],$this->module['modules'])){
+			$directories = $moduleData['urls']['directories'] ? join('_',$moduleData['urls']['directories']) : 'Index';
+			$ds = $moduleData['urls']['directories'] ? join(DIRECTORY_SEPARATOR,$moduleData['urls']['directories']) : 'Index';
+			return array(
+								'name' => $moduleData['name'].'_Controller_'.$directories.'Controller',
+								'path' => $this->module['modules'][$moduleData['name']].DIRECTORY_SEPARATOR.'Controller'.DIRECTORY_SEPARATOR.$ds.'Controller.php',
+								'action' => $moduleData['urls']['file'],
+								'data' => $moduleData['params']
+							);
+		}else{
+			if($params['attributes']['doc']){
+				$directories = $params['attributes']['doc']['directories'] ? join('_',$params['attributes']['doc']['directories']) : 'Index';
+				$ds = $params['attributes']['doc']['directories'] ? join(DIRECTORY_SEPARATOR,$params['attributes']['doc']['directories']) : 'Index';
+			}else{
+				$directories = $params['urls']['directories'] ? join('_',$params['urls']['directories']) : 'Index';
+				$ds = $params['urls']['directories'] ? join(DIRECTORY_SEPARATOR,$params['urls']['directories']) : 'Index';
 			}
-		}
-		if(!$res['controller']){
-			$directories = $params['urls']['directories'] ? join('_',$params['urls']['directories']) : 'Index';
-			$ds = $params['urls']['directories'] ? join(DIRECTORY_SEPARATOR,$params['urls']['directories']) : 'Index';
-			$dss = $params['urls']['directories'] ? join(DIRECTORY_SEPARATOR,$params['urls']['directories']).DIRECTORY_SEPARATOR : null;
-			$res['controller'] = array(
-									'name' => 'Main_Controller_'.$directories.'Controller',
-									'path' => $this->main['dir'].DIRECTORY_SEPARATOR.'Controller'.DIRECTORY_SEPARATOR.$ds.'Controller.php',
+
+			return array(
+									'name' => $projectName.'_Controller_'.$directories.'Controller',
+									'path' => $prjSet['dir'].DIRECTORY_SEPARATOR.'Controller'.DIRECTORY_SEPARATOR.$ds.'Controller.php',
 									'action' => $params['urls']['file']
 								);
-			$res['view'] = array(
-								'name' => $params['urls']['file'],
-								'path' => $this->main['dir'].DIRECTORY_SEPARATOR.'View'.DIRECTORY_SEPARATOR.$dss.$params['urls']['file'].'.php',
-							);
 		}
-
-		
+	}
+	public function getViewSet(){
+		$params = $this->params;
+		$prjSet = $this->projectSet;
+		$moduleData = !empty($params['attributes']['joint']) ? $params['attributes']['joint'] : $params['attributes']['direct'];
+		if(!$moduleData){
+			if($params['attributes']['doc']){
+				$directories = $params['attributes']['doc']['directories'] ? join('_',$params['attributes']['doc']['directories']) : 'Index';
+				$dss = $params['attributes']['doc']['directories'] ? join(DIRECTORY_SEPARATOR,$params['attributes']['doc']['directories']) : null;
+			}else{
+				$directories = $params['urls']['directories'] ? join('_',$params['urls']['directories']) : 'Index';
+				$dss = $params['urls']['directories'] ? join(DIRECTORY_SEPARATOR,$params['urls']['directories']) : null;
+			}
+			return array(
+				'name' => $params['urls']['file'],
+				'path' => $prjSet['dir'].DIRECTORY_SEPARATOR.'View'.DIRECTORY_SEPARATOR.$dss.$params['urls']['file'].'.php',
+			);
+		}else{
+			if(array_key_exists($moduleData['name'],$this->module['modules'])){
+				$directories = $moduleData['urls']['directories'] ? join('_',$moduleData['urls']['directories']) : 'Index';
+				$dss = $moduleData['urls']['directories'] ? join(DIRECTORY_SEPARATOR,$moduleData['urls']['directories']).DIRECTORY_SEPARATOR : null;
+				return array(
+					'name' => $moduleData['urls']['file'],
+					'path' => $this->module['modules'][$moduleData['name']].DIRECTORY_SEPARATOR.'View'.DIRECTORY_SEPARATOR.$dss.$moduleData['urls']['file'].'.php'
+				);
+			}else{
+				return array();
+			}
+		}
+	}
+	public function getThemeSet(){
+		$theme = $this->params['attributes']['theme'];
+		return array(
+			'name' => $theme,
+			'dir' => ROOT.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.$theme,
+			'url' => BASE.'src/'.$theme.'/'
+		);
+	}
+	public function getOutlineSet(){
+		$outline = $this->params['attributes']['outline'];
+		$layout = $this->params['attributes']['layout'];
+		$res = array(
+			'name' => $outline,
+			'dir' => $this->projectSet['layout'].DIRECTORY_SEPARATOR.$layout.DIRECTORY_SEPARATOR.'Outline',
+			'path' => $this->projectSet['layout'].DIRECTORY_SEPARATOR.$layout.DIRECTORY_SEPARATOR.'Outline'.DIRECTORY_SEPARATOR.$outline.'.xml'
+		);
+		$outlineReader = new Hana_Xml_Outline();
+		$outlineReader->setPath($res['path']);
+		$outlineReader->init();
+		$res['outlines'] = $outlineReader->getData();
 		return $res;
 	}
+	public function getPartsSet(){
+		return array(
+			'dir' => $this->projectSet['parts']
+		);
+	}
+	
+	
 }

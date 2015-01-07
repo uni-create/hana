@@ -6,6 +6,7 @@ class Hana_View extends Hana_Observer
 	protected $render = true;
 	protected $sourceMode = false;
 	protected $source = null;
+	protected $data = array();
 	
 	public function setPath($path){
 		$this->path = $path;
@@ -21,8 +22,11 @@ class Hana_View extends Hana_Observer
 	public function hide(){
 		$this->render = false;
 	}
-	public function setParams($params){
-		$this->setPath($params['view']['path']);
+	public function setRoute(){
+		// $this->router = $router;
+		global $router;
+		$params = $router->getViewSet();
+		$this->setPath($params['path']);
 	}
 	public function setSource($source){
 		$this->source = $source;
@@ -41,6 +45,7 @@ class Hana_View extends Hana_Observer
 	
 	
 	public function render(){
+		global $view;
 		if($this->render){
 			$this->trigger('beforeRender');
 			if($this->sourceMode){
