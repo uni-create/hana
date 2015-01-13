@@ -22,6 +22,15 @@ class Hana_View extends Hana_Observer
 	public function hide(){
 		$this->render = false;
 	}
+	public function getTheme($name=null){
+		global $router;
+		$theme = $router->getThemeSet();
+		if($name){
+			return $theme[$name];
+		}else{
+			return $theme;
+		}
+	}
 	public function setRoute(){
 		// $this->router = $router;
 		global $router;
@@ -51,9 +60,15 @@ class Hana_View extends Hana_Observer
 			if($this->sourceMode){
 				$this->renderSource();
 			}else{
-				if($this->exists) include($this->path);
+				if($this->exists){
+					include($this->path);
+				}else{
+					header("HTTP/1.0 404 Not Found");
+				}
 			}
 			$this->trigger('afterRender');
+		}else{
+			
 		}
 	}
     public function getFileSource(){

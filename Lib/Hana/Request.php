@@ -27,7 +27,7 @@ class Hana_Request
 		$urls = $this->parseUrl($query);
 		$url = BASE;
 		if($urls['directories']) $url .= join('/',$urls['directories']).'/';
-		$url .= $urls['file'];
+		if($urls['file'] != 'Index') $url .= $urls['file'];
 		if($urls['extension']) $url .= '.'.$urls['extension'];
 		if($urls['queries']){
 			$url .= '?';

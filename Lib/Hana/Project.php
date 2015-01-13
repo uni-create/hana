@@ -1,11 +1,13 @@
 <?php
 class Hana_Project
 {
+	protected $name = null;
 	protected $modules = array();
 	protected $controllers = array();
 	protected $models = array();
 	
-	public function __construct(){
+	public function __construct($name){
+		$this->name = $name;
 		$this->request = new Hana_Request();
 		$this->router = new Hana_Router();
 	}

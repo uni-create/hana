@@ -9,13 +9,9 @@
   </File>
   <Directory name="Admin" project="Admin" doc="/">
     <meta title="top page" description="top page desctiption" keyword="top page keywords"/>
-    <params>
-      <param property="page_id" value="1"/>
-    </params>
-	  <File name="Params" exception="Exception2">
+	  <File name="Params">
 		<meta title="top page" description="top page desctiption" keyword="top page keywords"/>
 		<params>
-		  <param property="page_id" value="1"/>
 		  <param property="page_id" value="1"/>
 		</params>
 	  </File>

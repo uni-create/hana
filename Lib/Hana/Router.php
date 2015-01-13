@@ -4,6 +4,10 @@ class Hana_Router
 	protected $project = array();
 	protected $module = array();
 	protected $settings = array();
+	protected $structure = array();
+	protected $projectSet = array();
+	protected $params = array();
+	protected $moduleSet = array();
 	
 	public function __construct(){
 		$projects = array();
@@ -171,8 +175,8 @@ class Hana_Router
 		$theme = $this->params['attributes']['theme'];
 		return array(
 			'name' => $theme,
-			'dir' => ROOT.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.$theme,
-			'url' => BASE.'src/'.$theme.'/'
+			'dir' => ROOT.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'theme'.DIRECTORY_SEPARATOR.$theme,
+			'url' => BASE.'src/theme/'.$theme.'/'
 		);
 	}
 	public function getOutlineSet(){
@@ -194,6 +198,26 @@ class Hana_Router
 			'dir' => $this->projectSet['parts']
 		);
 	}
-	
-	
+	public function setModuleSet($moduleName){
+		$this->moduleSet['dir'] = $this->module['modules'][$moduleName];
+		$this->moduleSet['name'] = $moduleName;
+	}
+	public function getModuleControlSet($urls){
+		$moduleName = $this->moduleSet['name'];
+		$res = array();
+		$ds = $urls['directories'];
+		if(empty($ds)) $ds = array('Index');
+		return array(
+						'path'=>$this->moduleSet['dir'].DIRECTORY_SEPARATOR.'Controller'.DIRECTORY_SEPARATOR.join('_',$ds).'Controller.php',
+						'name'=>$moduleName.'_Controller_'.join('_',$ds).'Controller',
+						'action'=>$urls['file']
+		);
+	}
+	public function getModuleViewSet($urls){
+		$moduleName = $this->moduleSet['name'];
+		$vd = empty($urls['directories']) ? null : DIRECTORY_SEPARATOR.join(DIRECTORY_SEPARATOR,$urls['directories']);
+		return array(
+						'path'=>$this->moduleSet['dir'].DIRECTORY_SEPARATOR.'View'.$vd.DIRECTORY_SEPARATOR.$urls['file'].'.php'
+		);
+	}
 }

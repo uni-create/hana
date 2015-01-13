@@ -85,8 +85,8 @@ class Hana_Xml_Structure extends Hana_Xml_Reader
 				$data['attributes'] = array_merge($data['attributes'],$tree[$dir]['attributes']);
 				$d = array();
 				$d['type'] = $tree[$dir]['type'];
-				$d['meta'] = $tree[$dir]['meta'];
-				$d['params'] = $tree[$dir]['params'];
+				$d['meta'] = isset($tree[$dir]['meta']) ? $tree[$dir]['meta'] : array();
+				$d['params'] = isset($tree[$dir]['params']) ? $tree[$dir]['params'] : array();
 				$data['path_nodes'][] = $d;
 				$data['paths'][] = $dir;
 				$this->searchLoop($tree[$dir],$directories,$file,$data);

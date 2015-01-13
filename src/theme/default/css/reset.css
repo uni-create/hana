@@ -1,0 +1,27 @@
+body,h1,h2,h3,h4,h5,span,p,dl,dt,dd,hr,header,aside,section,article,form,input,strong,fieldset,legend,textarea{
+	margin:0px;
+	padding:0px;
+	list-style:none;
+	border:0px;
+}
+input{
+	vertical-align:middle;
+}
+img{
+	border:0px;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+body{
+	text-align:center;
+}
+input[type=text]:focus {
+	outline:none;
+}
+select:focus{
+	outline:none;
+}
+textarea{outline:none;}
+input,select,textarea,button { font-family: "メイリオ", "ＭＳ Ｐゴシック", sans-serif; }

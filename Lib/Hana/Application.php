@@ -15,7 +15,7 @@ class Hana_Application
 	}
 	public function run(){
 		$this->appPath();
-		$project = new Hana_Project();
+		$project = new Hana_Project('root');
 		$project->exec();
 	}
 	public function appPath($path=null){
