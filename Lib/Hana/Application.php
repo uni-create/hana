@@ -15,10 +15,14 @@ class Hana_Application
 	}
 	public function run(){
 		$this->appPath();
+		$this->dataPath();
 		$project = new Hana_Project('root');
 		$project->exec();
 	}
 	public function appPath($path=null){
 		if(!defined('APP')) define('APP',ROOT.DIRECTORY_SEPARATOR.'App');
+	}
+	public function dataPath($path=null){
+		if(!defined('DATA')) define('DATA',ROOT.DIRECTORY_SEPARATOR.'App'.DIRECTORY_SEPARATOR.'Data');
 	}
 }

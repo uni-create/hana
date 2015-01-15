@@ -42,6 +42,7 @@ class Hana_Xml_Structure extends Hana_Xml_Reader
 		}else{
 			$data['attributes']['hook'] = array();
 		}
+
 		if(array_key_exists('joint',$data['attributes'])){
 			$joints  = preg_split('/\//',$data['attributes']['joint']);
 			$defPaths = array();
@@ -54,7 +55,7 @@ class Hana_Xml_Structure extends Hana_Xml_Reader
 			$joints = array_merge($joints,$defPaths);
 			$module = array_shift($joints);
 			$murls = $request->parseUrl(join('/',$joints));
-			$data['attributes']['joint'] = array('name'=>$module,'urls'=>$murls,'type'=>'joint');
+			$data['attributes']['joint'] = array('name'=>$module,'urls'=>$murls,'type'=>'joint','data'=>array());
 		}elseif(array_key_exists('direct',$data['attributes'])){
 			$joints  = preg_split('/\//',$data['attributes']['direct']);
 			$defPaths = array();
@@ -65,7 +66,7 @@ class Hana_Xml_Structure extends Hana_Xml_Reader
 			}
 			$module = array_shift($joints);
 			$murls = $request->parseUrl(join('/',$joints));
-			$data['attributes']['direct'] = array('name'=>$module,'urls'=>$murls,'type'=>'direct','params'=>$defPaths);
+			$data['attributes']['direct'] = array('name'=>$module,'urls'=>$murls,'type'=>'direct','data'=>$defPaths);
 		}
 		if(empty($data['attributes']['doc'])) $data['attributes']['doc'] = null;
 		$data['attributes']['doc'] = $request->parseUrl($data['attributes']['doc']);

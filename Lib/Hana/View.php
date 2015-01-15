@@ -35,6 +35,7 @@ class Hana_View extends Hana_Observer
 		// $this->router = $router;
 		global $router;
 		$params = $router->getViewSet();
+		// var_dump($params);
 		$this->setPath($params['path']);
 	}
 	public function setSource($source){
@@ -51,7 +52,16 @@ class Hana_View extends Hana_Observer
 		global $request;
 		return $request->getDefault($query);
 	}
-	
+	public function getHash($name,$type='html'){
+		$hash = Hana_Hash::get_hash($name);
+		if($type === 'html'){
+			return '<input type="hidden" name="'.$hash['name'].'" value="'.$hash['value'].'">'."\n";
+		}elseif($type === 'json'){
+			return '{"'.$hash['name'].'":"'.$hash['value'].'"};'."\n";
+		}else{
+			return $hash;
+		}
+	}
 	
 	public function render(){
 		global $view;

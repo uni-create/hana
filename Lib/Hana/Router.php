@@ -65,6 +65,12 @@ class Hana_Router
 		$this->params = $params;
 		// var_dump($params);
 	}
+	public function getParams(){
+		return $this->params;
+	}
+	public function setParams($params){
+		$this->params = $params;
+	}
 	public function getMeta(){
 		return $this->params['target']['meta'];
 	}
@@ -120,25 +126,45 @@ class Hana_Router
 		if(array_key_exists($moduleData['name'],$this->module['modules'])){
 			$directories = $moduleData['urls']['directories'] ? join('_',$moduleData['urls']['directories']) : 'Index';
 			$ds = $moduleData['urls']['directories'] ? join(DIRECTORY_SEPARATOR,$moduleData['urls']['directories']) : 'Index';
+			
+			if(isset($params['target']['params'])){
+				$params = $params['target']['params'];
+			}else{
+				if(isset($params['path_nodes'])){
+					$last = end($params['path_nodes']);
+					$ps = $last['params'];
+				}else{
+					$ps = array();
+				}
+			}
 			return array(
 								'name' => $moduleData['name'].'_Controller_'.$directories.'Controller',
 								'path' => $this->module['modules'][$moduleData['name']].DIRECTORY_SEPARATOR.'Controller'.DIRECTORY_SEPARATOR.$ds.'Controller.php',
 								'action' => $moduleData['urls']['file'],
-								'data' => $moduleData['params']
+								'params' => $ps,
+								'data' => $moduleData['data']
 							);
 		}else{
 			if($params['attributes']['doc']){
-				$directories = $params['attributes']['doc']['directories'] ? join('_',$params['attributes']['doc']['directories']) : 'Index';
-				$ds = $params['attributes']['doc']['directories'] ? join(DIRECTORY_SEPARATOR,$params['attributes']['doc']['directories']) : 'Index';
+				$directories = $params['attributes']['doc']['directories'];
+				$directories = $params['urls']['directories'];
+				if(isset($directories[0])){
+					if($directories[0] == $params['attributes']['name']) array_shift($directories);
+				}
+				
+				$ds = $directories ? join(DIRECTORY_SEPARATOR,$directories) : 'Index';
+				$directories = $directories ? join('_',$directories) : 'Index';
 			}else{
 				$directories = $params['urls']['directories'] ? join('_',$params['urls']['directories']) : 'Index';
 				$ds = $params['urls']['directories'] ? join(DIRECTORY_SEPARATOR,$params['urls']['directories']) : 'Index';
 			}
-
+			$pm = empty($params['target']['params']) ? array() : $params['target']['params'];
 			return array(
 									'name' => $projectName.'_Controller_'.$directories.'Controller',
 									'path' => $prjSet['dir'].DIRECTORY_SEPARATOR.'Controller'.DIRECTORY_SEPARATOR.$ds.'Controller.php',
-									'action' => $params['urls']['file']
+									'action' => $params['urls']['file'],
+									'params' => $pm,
+									'data' => array()
 								);
 		}
 	}
@@ -148,20 +174,26 @@ class Hana_Router
 		$moduleData = !empty($params['attributes']['joint']) ? $params['attributes']['joint'] : $params['attributes']['direct'];
 		if(!$moduleData){
 			if($params['attributes']['doc']){
-				$directories = $params['attributes']['doc']['directories'] ? join('_',$params['attributes']['doc']['directories']) : 'Index';
-				$dss = $params['attributes']['doc']['directories'] ? join(DIRECTORY_SEPARATOR,$params['attributes']['doc']['directories']) : null;
+				$directories = $params['attributes']['doc']['directories'];
+				$directories = $params['urls']['directories'];
+				if(isset($directories[0])){
+					if($directories[0] == $params['attributes']['name']) array_shift($directories);
+				}
+				$dss = $directories ? join(DIRECTORY_SEPARATOR,$directories).DIRECTORY_SEPARATOR : null;
+				
 			}else{
-				$directories = $params['urls']['directories'] ? join('_',$params['urls']['directories']) : 'Index';
-				$dss = $params['urls']['directories'] ? join(DIRECTORY_SEPARATOR,$params['urls']['directories']) : null;
+				$dss = $params['urls']['directories'] ? join(DIRECTORY_SEPARATOR,$params['urls']['directories']).DIRECTORY_SEPARATOR : null;
 			}
+			
 			return array(
 				'name' => $params['urls']['file'],
 				'path' => $prjSet['dir'].DIRECTORY_SEPARATOR.'View'.DIRECTORY_SEPARATOR.$dss.$params['urls']['file'].'.php',
 			);
 		}else{
 			if(array_key_exists($moduleData['name'],$this->module['modules'])){
-				$directories = $moduleData['urls']['directories'] ? join('_',$moduleData['urls']['directories']) : 'Index';
+				
 				$dss = $moduleData['urls']['directories'] ? join(DIRECTORY_SEPARATOR,$moduleData['urls']['directories']).DIRECTORY_SEPARATOR : null;
+
 				return array(
 					'name' => $moduleData['urls']['file'],
 					'path' => $this->module['modules'][$moduleData['name']].DIRECTORY_SEPARATOR.'View'.DIRECTORY_SEPARATOR.$dss.$moduleData['urls']['file'].'.php'

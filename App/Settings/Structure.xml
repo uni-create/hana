@@ -7,13 +7,18 @@
       <param property="page_id" value="1"/>
     </params>
   </File>
-  <Directory name="Admin" project="Admin" doc="/">
-    <meta title="top page" description="top page desctiption" keyword="top page keywords"/>
+  <Directory name="Admin" project="Admin" doc="/" theme="admin" level="2" hook="Secure,Default">
 	  <File name="Params">
 		<meta title="top page" description="top page desctiption" keyword="top page keywords"/>
 		<params>
 		  <param property="page_id" value="1"/>
 		</params>
 	  </File>
+	  <File name="Login" level="0" direct="Account/Login/Login"></File>
+	  <Directory name="Test" direct="Account/">
+		<params>
+		  <param property="page_id" value="1"/>
+		</params>
+	  </Directory>
   </Directory>
 </Directory>

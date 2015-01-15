@@ -32,7 +32,6 @@ class Hana_View_Outline extends Hana_View
 	}
 	public function setParts($parts){
 		$tmp = $this->tmp;
-		$tmp->setRoute();
 		$ps = array();
 		foreach($parts as $part){
 			$p = clone $tmp;

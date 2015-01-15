@@ -1,0 +1,21 @@
+
+img { -ms-interpolation-mode: bicubic;vertical-align: bottom;}
+
+
+.c:after {
+	visibility: hidden;
+	display: block;
+	font-size: 0;
+	content: " ";
+	clear: both;
+	height: 0;
+	}
+* html .c{ zoom: 1; } /* IE6 */
+*:first-child+html .c{ zoom: 1; } /* IE7 */
+
+.inline-block{
+	display: inline-block;
+	/display: inline;
+	/zoom: 1;
+}
+

@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<hooks>
+<hook module="Account" name="Secure"></hook>
+</hooks>

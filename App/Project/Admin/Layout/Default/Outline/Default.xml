@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<outlines>
+  <HEADER>
+    <parts name="Header"></parts>
+  </HEADER>
+  <LEFT>
+	<parts name="Contents"></parts>
+  </LEFT>
+  <FOOTER>
+    <parts name="Footer"></parts>
+  </FOOTER>
+</outlines>

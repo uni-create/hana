@@ -1,0 +1,7 @@
+@import url("reset.css");
+@import url("common.css");
+@import url("grad.css");
+
+body{line-height:1.5;font-family:'メイリオ';}
+ul,ol{text-align:left;}
+

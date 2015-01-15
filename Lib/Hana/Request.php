@@ -68,4 +68,25 @@ class Hana_Request
 		}
 		return $urls;
 	}
+	public function isAjax(){
+		return ($_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest');
+	}
+	public function redirect($url){
+		header('Location: '.$url);
+		die();
+	}
+	public function getPost(){
+		return $this->sanitize($_POST);
+	}
+	public function getQuery(){
+		return $this->sanitize($_GET);
+	}
+	private function sanitize($array){
+		if(is_array($array)){
+			$array = array_map(array($this,'sanitize'),$array);
+		}else{
+			$array = htmlspecialchars($array);
+		}
+		return $array;
+	}
 }

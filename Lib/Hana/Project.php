@@ -26,10 +26,10 @@ class Hana_Project
 		
 		$hooks = $this->router->getHookSet();
 		//run hooks
-		// var_dump($params);
+		// var_dump($hooks);
 		foreach($hooks as $hookName){
 			$h = new $hookName();
-			if(method_exists($h,'beforeRoute')) $h->beforeRoute();
+			$h->beforeRoute();
 		}
 		
 
@@ -44,13 +44,13 @@ class Hana_Project
 		
 		$control = $this->router->getControlSet();
 		
-
+		
 		if(!empty($control['path'])){
 			if(file_exists($control['path'])){
 				$controller = $this->getController($control['name']);
 				$action = $control['action'];
 				if(method_exists($controller,$action)){
-					$res = $controller->$action();
+					$res = $controller->$action($control['params'],$control['data']);
 				}
 			}
 		}
@@ -78,5 +78,6 @@ class Hana_Project
 		if(empty($this->models[$modelName])){
 			$this->models[$modelName] = new $modelName();
 		}
+		return $this->models[$modelName];
 	}
 }

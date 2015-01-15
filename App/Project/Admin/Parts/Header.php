@@ -1,4 +1,4 @@
-<header style="padding:20px;background-color:#efefef;margin-bottom:20px;">
+<header style="padding:20px;background-color:#F5F5E4;margin-bottom:20px;">
 <h1>Load header parts</h1>
 <nav>
 	<ol>
