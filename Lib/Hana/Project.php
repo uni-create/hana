@@ -5,11 +5,18 @@ class Hana_Project
 	protected $modules = array();
 	protected $controllers = array();
 	protected $models = array();
+	protected $data = array();
 	
 	public function __construct($name){
 		$this->name = $name;
 		$this->request = new Hana_Request();
 		$this->router = new Hana_Router();
+	}
+	public function setData($name,$data){
+		$this->data[$name] = $data;
+	}
+	public function getData($name){
+		return $this->data[$name];
 	}
 	public function exec($query=null){
 		global $project;
@@ -47,7 +54,12 @@ class Hana_Project
 		
 		if(!empty($control['path'])){
 			if(file_exists($control['path'])){
-				$controller = $this->getController($control['name']);
+				if(empty($control['module'])){
+					$controller = $this->getController($control['name']);
+				}else{
+					$module = $this->getModule($control['module']);
+					$controller = $module->getController($control['name']);
+				}
 				$action = $control['action'];
 				if(method_exists($controller,$action)){
 					$res = $controller->$action($control['params'],$control['data']);

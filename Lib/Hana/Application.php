@@ -26,3 +26,11 @@ class Hana_Application
 		if(!defined('DATA')) define('DATA',ROOT.DIRECTORY_SEPARATOR.'App'.DIRECTORY_SEPARATOR.'Data');
 	}
 }
+
+class Hana
+{
+	public static function getModule($name){
+		global $project;
+		return $project->getModule($name);
+	}
+}

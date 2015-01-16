@@ -86,7 +86,11 @@ class Hana_Router
 			$h = clone $hookTmp;
 			$h->setPath($hpath);
 			$h->init();
-			$hs = $hs + $h->getData();
+			$hi = $h->getData();
+			while($hi){
+				$hs[] = array_shift($hi);
+			}
+			// $hs = $hs + $h->getData();
 		}
 		if($hs){
 			foreach($hs as $key => $h){
@@ -138,6 +142,7 @@ class Hana_Router
 				}
 			}
 			return array(
+								'module'=>$moduleData['name'],
 								'name' => $moduleData['name'].'_Controller_'.$directories.'Controller',
 								'path' => $this->module['modules'][$moduleData['name']].DIRECTORY_SEPARATOR.'Controller'.DIRECTORY_SEPARATOR.$ds.'Controller.php',
 								'action' => $moduleData['urls']['file'],

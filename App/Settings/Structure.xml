@@ -7,7 +7,7 @@
       <param property="page_id" value="1"/>
     </params>
   </File>
-  <Directory name="Admin" project="Admin" doc="/" theme="admin" level="2" hook="Secure,Default">
+  <Directory name="Admin" project="Admin" doc="/" theme="admin" level="2" hook="Default,Secure">
 	  <File name="Params">
 		<meta title="top page" description="top page desctiption" keyword="top page keywords"/>
 		<params>

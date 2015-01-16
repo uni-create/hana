@@ -3,15 +3,12 @@ class Account_Hook_Secure implements Hana_Hook
 {
 	public function beforeRoute(){
 		global $router;
+		$accountModule = Hana::getModule('Account');
 		$params = $router->getParams();
 		if(!empty($params['attributes']['level'])){
-			global $project;
-			$loginController = $project->getModule('Account')->getController('Account_Controller_LoginController');
+			$loginController = $accountModule->getController('Account_Controller_LoginController');
 			if(!$loginController->is_logined()){
-				global $request;
-				$request->redirect($request->formatUrl('admin/login'));
-			}else{
-				
+				$loginController->login_error_redirect();
 			}
 		}elseif($params['attributes']['project'] == 'Admin'){
 			$params['attributes']['frame'] = 'Login';
