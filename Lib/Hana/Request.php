@@ -38,7 +38,10 @@ class Hana_Request
 		return strtolower($url);
 	}
 	public function parseUrl($query=null){
-		if($query == '/') $query = 'Index';
+		if(strpos($query,'/') === 0){
+			$query = ltrim($query,'/');
+			if(!$query) $query = 'Index';
+		}
 		$query = $query ? strtr($query,array(BASE=>null)) : null;
 		$info = parse_url($query);
 		$paths = preg_split('/\//',$info['path']);

@@ -1,20 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Directory project="Default" name="Root" doc="/" layout="Default" frame="Default" outline="Default" theme="default" exception="Exception" hook="Default">
+<Directory project="Default" name="Root" layout="Default" frame="Default" outline="Default" theme="default" exception="Exception" hook="Default">
   <meta title="root"/>
   <File name="Index">
     <meta title="top page" description="top page desctiption" keyword="top page keywords"/>
-    <params>
-      <param property="page_id" value="1"/>
-    </params>
   </File>
-  <Directory name="Admin" project="Admin" doc="/" theme="admin" level="2" hook="Default,Secure">
+  <File name="Login" hook="Default"></File>
+  <Directory name="Admin" project="Admin" theme="admin" level="2" hook="Default,Secure">
 	  <File name="Params">
 		<meta title="top page" description="top page desctiption" keyword="top page keywords"/>
-		<params>
-		  <param property="page_id" value="1"/>
-		</params>
 	  </File>
 	  <File name="Login" level="0" direct="Account/Login/Login"></File>
+	  <File name="Logout" level="0" direct="Account/Login/Logout"></File>
 	  <Directory name="Test" direct="Account/">
 		<params>
 		  <param property="page_id" value="1"/>

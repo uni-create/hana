@@ -34,8 +34,13 @@ class Hana_Project
 		$hooks = $this->router->getHookSet();
 		//run hooks
 		// var_dump($hooks);
-		foreach($hooks as $hookName){
-			$h = new $hookName();
+		foreach($hooks as $hs){
+			if($hs['module']){
+				$pj = $this->getModule($hs['module']);
+			}else{
+				$pj = $this;
+			}
+			$h = $pj->getHook($hs['name']);
 			$h->beforeRoute();
 		}
 		
@@ -91,5 +96,11 @@ class Hana_Project
 			$this->models[$modelName] = new $modelName();
 		}
 		return $this->models[$modelName];
+	}
+	public function getHook($hookName){
+		if(empty($this->hooks[$hookName])){
+			$this->hooks[$hookName] = new $hookName();
+		}
+		return $this->hooks[$hookName];
 	}
 }

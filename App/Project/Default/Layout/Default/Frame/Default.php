@@ -8,6 +8,7 @@
 </head>
 <body>
 	{LOAD_HEADER}
+	{LOAD_NAV}
 	{LOAD_LEFT}
 	{LOAD_FOOTER}
 </body>

@@ -56,7 +56,7 @@ class Hana_Router
 		$this->structure = $st;
 	}
 	public function init($request){
-		$params = $this->structure->getParams($request);
+		$params = $this->structure->getParams($request->getDefaultUrls());
 		$projectName = $params['attributes']['project'];
 		$this->projectSet = $this->project['projects'][$projectName];
 		if(empty($params['attributes']['joint'])) $params['attributes']['joint'] = null;
@@ -99,7 +99,7 @@ class Hana_Router
 				}elseif($h['project']){
 					$hname = ucfirst($h['project']).'_Hook_'.ucfirst(strtr($h['path'],array('/'=>'_')));
 				}
-				$hooks[] = $hname;
+				$hooks[] = array('name'=>$hname,'module'=>$h['module'],'project'=>$h['project']);
 			}
 		}
 		return $hooks;
@@ -130,7 +130,6 @@ class Hana_Router
 		if(array_key_exists($moduleData['name'],$this->module['modules'])){
 			$directories = $moduleData['urls']['directories'] ? join('_',$moduleData['urls']['directories']) : 'Index';
 			$ds = $moduleData['urls']['directories'] ? join(DIRECTORY_SEPARATOR,$moduleData['urls']['directories']) : 'Index';
-			
 			if(isset($params['target']['params'])){
 				$params = $params['target']['params'];
 			}else{
@@ -150,20 +149,14 @@ class Hana_Router
 								'data' => $moduleData['data']
 							);
 		}else{
-			if($params['attributes']['doc']){
-				$directories = $params['attributes']['doc']['directories'];
-				$directories = $params['urls']['directories'];
-				if(isset($directories[0])){
-					if($directories[0] == $params['attributes']['name']) array_shift($directories);
-				}
-				
-				$ds = $directories ? join(DIRECTORY_SEPARATOR,$directories) : 'Index';
-				$directories = $directories ? join('_',$directories) : 'Index';
-			}else{
-				$directories = $params['urls']['directories'] ? join('_',$params['urls']['directories']) : 'Index';
-				$ds = $params['urls']['directories'] ? join(DIRECTORY_SEPARATOR,$params['urls']['directories']) : 'Index';
+			$directories = $params['urls']['directories'];
+			if(!empty($directories)){
+				if($directories[0] == $params['attributes']['project']) array_shift($directories);
 			}
+			$directories = $directories ? join('_',$params['urls']['directories']) : 'Index';
+			$ds = $params['urls']['directories'] ? join(DIRECTORY_SEPARATOR,$params['urls']['directories']) : 'Index';
 			$pm = empty($params['target']['params']) ? array() : $params['target']['params'];
+
 			return array(
 									'name' => $projectName.'_Controller_'.$directories.'Controller',
 									'path' => $prjSet['dir'].DIRECTORY_SEPARATOR.'Controller'.DIRECTORY_SEPARATOR.$ds.'Controller.php',
@@ -178,17 +171,11 @@ class Hana_Router
 		$prjSet = $this->projectSet;
 		$moduleData = !empty($params['attributes']['joint']) ? $params['attributes']['joint'] : $params['attributes']['direct'];
 		if(!$moduleData){
-			if($params['attributes']['doc']){
-				$directories = $params['attributes']['doc']['directories'];
-				$directories = $params['urls']['directories'];
-				if(isset($directories[0])){
-					if($directories[0] == $params['attributes']['name']) array_shift($directories);
-				}
-				$dss = $directories ? join(DIRECTORY_SEPARATOR,$directories).DIRECTORY_SEPARATOR : null;
-				
-			}else{
-				$dss = $params['urls']['directories'] ? join(DIRECTORY_SEPARATOR,$params['urls']['directories']).DIRECTORY_SEPARATOR : null;
+			$directories = $params['urls']['directories'];
+			if(!empty($directories)){
+				if($directories[0] == $params['attributes']['project']) array_shift($directories);
 			}
+			$dss = $directories ? join(DIRECTORY_SEPARATOR,$directories).DIRECTORY_SEPARATOR : null;
 			
 			return array(
 				'name' => $params['urls']['file'],

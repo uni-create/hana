@@ -10,13 +10,14 @@ class Account_Hook_Settings implements Hana_Hook
 				),
 				'logined'=>array(
 					'error'=>'admin/login'
-				)
+				),
+				'logout'=>'/'
 			),
 			'cookieName'=>'hana_admin'
 		);
-		$accountModule = Hana::getModule('Account');
-		$loginController = $accountModule->getController('Account_Controller_LoginController');
-		$loginController->setParams($params);
+		Hana::module('Account')
+						->getController('Account_Controller_LoginController')
+						->setParams($params);
 		
 		
 	}

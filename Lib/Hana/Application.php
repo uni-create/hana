@@ -29,8 +29,16 @@ class Hana_Application
 
 class Hana
 {
-	public static function getModule($name){
+	public static function module($name){
 		global $project;
 		return $project->getModule($name);
+	}
+	public static function controller($name){
+		global $project;
+		return $project->getController($name);
+	}
+	public static function model($name){
+		global $project;
+		return $project->getModel($name);
 	}
 }

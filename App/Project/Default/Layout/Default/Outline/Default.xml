@@ -3,6 +3,9 @@
   <HEADER>
     <parts name="Header"></parts>
   </HEADER>
+  <NAV>
+    <parts name="Nav"></parts>
+  </NAV>
   <LEFT>
 	<parts name="Contents"></parts>
   </LEFT>

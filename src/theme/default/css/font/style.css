@@ -1,0 +1,136 @@
+@font-face {
+	font-family: 'icomoon';
+	src:url('fonts/icomoon.eot?-7d06f6');
+	src:url('fonts/icomoon.eot?#iefix-7d06f6') format('embedded-opentype'),
+		url('fonts/icomoon.woff?-7d06f6') format('woff'),
+		url('fonts/icomoon.ttf?-7d06f6') format('truetype'),
+		url('fonts/icomoon.svg?-7d06f6#icomoon') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+[class^="icon-"], [class*=" icon-"] {
+	font-family: 'icomoon';
+	speak: none;
+	font-style: normal;
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+	line-height: 1;
+
+	/* Better Font Rendering =========== */
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+.icon-clock:before {
+	content: "\e600";
+}
+.icon-close:before {
+	content: "\e601";
+}
+.icon-config:before {
+	content: "\e602";
+}
+.icon-delta_down:before {
+	content: "\e603";
+}
+.icon-delta_left:before {
+	content: "\e604";
+}
+.icon-delta_right:before {
+	content: "\e605";
+}
+.icon-delta_up:before {
+	content: "\e606";
+}
+.icon-down:before {
+	content: "\e607";
+}
+.icon-file:before {
+	content: "\e608";
+}
+.icon-folder_close:before {
+	content: "\e609";
+}
+.icon-folder_open:before {
+	content: "\e60a";
+}
+.icon-left:before {
+	content: "\e60b";
+}
+.icon-lock:before {
+	content: "\e60c";
+}
+.icon-minus:before {
+	content: "\e60d";
+}
+.icon-nav:before {
+	content: "\e60e";
+}
+.icon-params:before {
+	content: "\e60f";
+}
+.icon-pencil:before {
+	content: "\e610";
+}
+.icon-plug:before {
+	content: "\e611";
+}
+.icon-plus:before {
+	content: "\e612";
+}
+.icon-pointer_down:before {
+	content: "\e613";
+}
+.icon-pointer_left:before {
+	content: "\e614";
+}
+.icon-pointer_right:before {
+	content: "\e615";
+}
+.icon-pointer_up:before {
+	content: "\e616";
+}
+.icon-power:before {
+	content: "\e617";
+}
+.icon-right:before {
+	content: "\e618";
+}
+.icon-stop_up:before {
+	content: "\e619";
+}
+.icon-up:before {
+	content: "\e61a";
+}
+.icon-image:before {
+	content: "\e90d";
+}
+.icon-list-numbered:before {
+	content: "\e9b9";
+}
+.icon-list2:before {
+	content: "\e9bb";
+}
+.icon-font:before {
+	content: "\ea5c";
+}
+.icon-bold:before {
+	content: "\ea62";
+}
+.icon-underline:before {
+	content: "\ea63";
+}
+.icon-text-color:before {
+	content: "\ea6d";
+}
+.icon-paragraph-left:before {
+	content: "\ea77";
+}
+.icon-paragraph-center:before {
+	content: "\ea78";
+}
+.icon-embed2:before {
+	content: "\ea80";
+}

@@ -51,7 +51,7 @@ class Hana_View_Layout extends Hana_View
 	public function createOutline($outlineName,$reg=null){
 		$on = $reg ? $reg.'_'.$outlineName : 'LOAD_'.$outlineName;
 		$this->addReg($on);
-		// $outline = clone 
+		$outline = clone $this->tmp;
 		$this->outlines[$on] = $outline;
 	}
 	public function render(){

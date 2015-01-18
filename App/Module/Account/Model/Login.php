@@ -21,14 +21,20 @@ class Account_Model_Login extends Hana_Model
 	public function login(){
 		global $request;
 		$data = $request->getPost();
-		if($data){
-			$user = $this->get_member($data['user'],$data['password']);
-			if($user){
-				$hash = Hana_Hash::create_hash();
-				$this->update_hash($user['user'],$hash);
-				$cookie = new Hana_Cookie();
-				$cookie->set($this->cookieName,$hash);
-				return true;
+		global $view;
+		$view->setData('hashName',$this->hashNames['login']);
+		if(Hana_Hash::is_hash($this->hashNames['login'])){
+			if($data){
+				$user = $this->get_member($data['user'],$data['password']);
+				if($user){
+					$hash = Hana_Hash::create_hash();
+					$this->update_hash($user['user'],$hash);
+					$cookie = new Hana_Cookie();
+					$cookie->set($this->cookieName,$hash);
+					return true;
+				}else{
+					return false;
+				}
 			}else{
 				return false;
 			}
@@ -36,16 +42,16 @@ class Account_Model_Login extends Hana_Model
 			return false;
 		}
 	}
+	public function logout(){
+		$cookie = new Hana_Cookie();
+		$cookie->delete($this->cookieName);
+	}
 	public function get_member($user,$password){
-		if(Hana_Hash::is_hash($this->hashNames['login'])){
-			$stmt = $this->db->prepare('select * from mod_account_users where user = :USER and password = :PASSWORD');
-			$stmt->bindValue(':USER',$user);
-			$stmt->bindValue(':PASSWORD',$password);
-			$stmt->execute();
-			return $stmt->fetch();
-		}else{
-			return array();
-		}
+		$stmt = $this->db->prepare('select * from mod_account_users where user = :USER and password = :PASSWORD');
+		$stmt->bindValue(':USER',$user);
+		$stmt->bindValue(':PASSWORD',$password);
+		$stmt->execute();
+		return $stmt->fetch();
 	}
 	public function update_hash($user,$hash){
 		try{
