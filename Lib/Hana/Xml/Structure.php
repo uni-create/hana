@@ -33,6 +33,7 @@ class Hana_Xml_Structure extends Hana_Xml_Reader
 		$data = array();
 		$data['urls'] = $urls;
 		$data['attributes'] = $this->data['Root']['attributes'];
+		$data['project_root'] = array();
 		$data['target'] = array();
 		$data['paths'] = array();
 		$data['path_nodes'] = array();
@@ -69,6 +70,18 @@ class Hana_Xml_Structure extends Hana_Xml_Reader
 			$murls = $request->parseUrl(join('/',$joints));
 			$data['attributes']['direct'] = array('name'=>$module,'urls'=>$murls,'type'=>'direct','data'=>$defPaths);
 		}
+		if($data['project_root']){
+			$ps = $data['project_root'];
+			foreach($urls['directories'] as $key => $u){
+				if($u == $data['project_root'][$key]){
+					array_shift($ps);
+				}else{
+					break;
+				}
+			}
+			array_unshift($ps,$data['attributes']['project']);
+			$data['project_root'] = $ps;
+		}
 		return $data;
 	}
 	protected function searchLoop($tree,$directories,$file,&$data=array()){
@@ -83,12 +96,17 @@ class Hana_Xml_Structure extends Hana_Xml_Reader
 					unset($data['attributes']['direct']);
 				}
 				$data['attributes'] = array_merge($data['attributes'],$tree[$dir]['attributes']);
+				
+
 				$d = array();
 				$d['type'] = $tree[$dir]['type'];
 				$d['meta'] = isset($tree[$dir]['meta']) ? $tree[$dir]['meta'] : array();
 				$d['params'] = isset($tree[$dir]['params']) ? $tree[$dir]['params'] : array();
 				$data['path_nodes'][] = $d;
 				$data['paths'][] = $dir;
+				if($this->data['Root']['attributes']['project'] != $data['attributes']['project']){
+					$data['project_root'] = $data['paths'];
+				}
 				$this->searchLoop($tree[$dir],$directories,$file,$data);
 			}
 		}else{

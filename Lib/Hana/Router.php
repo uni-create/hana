@@ -149,17 +149,21 @@ class Hana_Router
 								'data' => $moduleData['data']
 							);
 		}else{
-			$directories = $params['urls']['directories'];
-			if(!empty($directories)){
+			// var_dump($params['project_root']);
+			if(!empty($params['project_root'])){
+				$directories = $params['project_root'];
 				if($directories[0] == $params['attributes']['project']) array_shift($directories);
+			}else{
+				$directories = $params['urls']['directories'];
 			}
-			$directories = $directories ? join('_',$params['urls']['directories']) : 'Index';
-			$ds = $params['urls']['directories'] ? join(DIRECTORY_SEPARATOR,$params['urls']['directories']) : 'Index';
+			
+			$ds = $directories ? join('_',$directories) : 'Index';
+			if(!$directories) $directories[] = 'Index';
+			$directories = $directories ? join(DIRECTORY_SEPARATOR,$directories) : 'Index';
 			$pm = empty($params['target']['params']) ? array() : $params['target']['params'];
-
 			return array(
-									'name' => $projectName.'_Controller_'.$directories.'Controller',
-									'path' => $prjSet['dir'].DIRECTORY_SEPARATOR.'Controller'.DIRECTORY_SEPARATOR.$ds.'Controller.php',
+									'name' => $projectName.'_Controller_'.$ds.'Controller',
+									'path' => $prjSet['dir'].DIRECTORY_SEPARATOR.'Controller'.DIRECTORY_SEPARATOR.$directories.'Controller.php',
 									'action' => $params['urls']['file'],
 									'params' => $pm,
 									'data' => array()
@@ -171,12 +175,13 @@ class Hana_Router
 		$prjSet = $this->projectSet;
 		$moduleData = !empty($params['attributes']['joint']) ? $params['attributes']['joint'] : $params['attributes']['direct'];
 		if(!$moduleData){
-			$directories = $params['urls']['directories'];
-			if(!empty($directories)){
+			if(!empty($params['project_root'])){
+				$directories = $params['project_root'];
 				if($directories[0] == $params['attributes']['project']) array_shift($directories);
+			}else{
+				$directories = $params['urls']['directories'];
 			}
 			$dss = $directories ? join(DIRECTORY_SEPARATOR,$directories).DIRECTORY_SEPARATOR : null;
-			
 			return array(
 				'name' => $params['urls']['file'],
 				'path' => $prjSet['dir'].DIRECTORY_SEPARATOR.'View'.DIRECTORY_SEPARATOR.$dss.$params['urls']['file'].'.php',
