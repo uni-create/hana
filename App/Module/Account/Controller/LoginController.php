@@ -1,16 +1,28 @@
 <?php
 class Account_Controller_LoginController extends Hana_Controller
 {
-	protected $params = array();
-	
-	public function is_logined(){
+	protected function is_logined(){
 		$loginModel = Hana::module('Account')->getModel('Account_Model_Login');
-		return $loginModel->is_logined($this->params['cookieName']);
+		return $loginModel->is_logined();
+	}
+	public function Secure(){
+		global $router;
+		$params = $router->getParams();
+		if(!empty($params['attributes']['level'])){
+			if(!$this->is_logined()){
+				$this->login_error_redirect();
+			}
+		}elseif($params['attributes']['project'] == 'Admin'){
+			$params['attributes']['frame'] = 'Login';
+			$params['attributes']['outline'] = 'Login';
+			$router->setParams($params);
+		}
 	}
 	public function Login(){
 		$loginModel = Hana::module('Account')->getModel('Account_Model_Login');
 		if($loginModel->login()){
-			$this->redirect($this->params['redirects']['form']['success']);
+			$redirects = Hana::module('Account')->getData('redirects');
+			$this->redirect($redirects['form']['success']);
 		}else{
 			// var_dump($this);
 			//error
@@ -19,14 +31,12 @@ class Account_Controller_LoginController extends Hana_Controller
 	public function Logout(){
 		$loginModel = Hana::module('Account')->getModel('Account_Model_Login');
 		$loginModel->logout();
-		$this->redirect($this->params['redirects']['logout']);
+		$redirects = Hana::module('Account')->getData('redirects');
+		$this->redirect($redirects['logout']);
 	}
-	public function setParams($params){
-		$this->params = $params;
-		$loginModel = Hana::module('Account')->getModel('Account_Model_Login');
-		$loginModel->setCookieName($params['cookieName']);
-	}
-	public function login_error_redirect(){
-		$this->redirect($this->params['redirects']['logined']['error']);
+	protected function login_error_redirect(){
+		$module = Hana::module('Account');
+		$redirects = Hana::module('Account')->getData('redirects');
+		$this->redirect($redirects['logined']['error']);
 	}
 }

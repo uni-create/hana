@@ -1,5 +1,5 @@
 <?php
-interface Hana_Hook
+interface Hana_Setting
 {
 	public function beforeRoute();
 	

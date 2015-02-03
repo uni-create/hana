@@ -6,6 +6,7 @@ class Hana_Project
 	protected $controllers = array();
 	protected $models = array();
 	protected $data = array();
+	protected $configs = array();
 	
 	public function __construct($name){
 		$this->name = $name;
@@ -14,6 +15,7 @@ class Hana_Project
 	}
 	public function setData($name,$data){
 		$this->data[$name] = $data;
+		return $this;
 	}
 	public function getData($name){
 		return $this->data[$name];
@@ -31,19 +33,12 @@ class Hana_Project
 		$urls = $this->request->parseUrl($this->request->getDefault($query));
 		$this->router->init($this->request);
 		
-		$hooks = $this->router->getHookSet();
-		//run hooks
-		// var_dump($hooks);
-		foreach($hooks as $hs){
-			if($hs['module']){
-				$pj = $this->getModule($hs['module']);
-			}else{
-				$pj = $this;
-			}
-			$h = $pj->getHook($hs['name']);
-			$h->beforeRoute();
+		$set = $this->router->getSet();
+
+		if($set){
+			$this->getSet($set['name'])->beforeRoute();
 		}
-		
+	
 
 		global $layout;
 		global $view;
@@ -97,10 +92,10 @@ class Hana_Project
 		}
 		return $this->models[$modelName];
 	}
-	public function getHook($hookName){
-		if(empty($this->hooks[$hookName])){
-			$this->hooks[$hookName] = new $hookName();
+	public function getSet($setName){
+		if(empty($this->sets[$setName])){
+			$this->sets[$setName] = new $setName();
 		}
-		return $this->hooks[$hookName];
+		return $this->sets[$setName];
 	}
 }

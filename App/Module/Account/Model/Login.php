@@ -1,18 +1,18 @@
 <?php
 class Account_Model_Login extends Hana_Model
 {
-	protected $adapter = 'Default_Model_Adapter_Main';
-	protected $hashNames = array(
-							'login'=>'mod_account_user_login'
-	);
-	protected $cookieName = null;
-	
-	public function setCookieName($name){
-		$this->cookieName = $name;
+	protected function getCookieName(){
+		global $module;
+		return Hana::module('Account')->getData('cookieName');
+	}
+	protected function getHashName($action){
+		global $module;
+		$hashNames = Hana::module('Account')->getData('hashNames');
+		return $hashNames[$action];
 	}
 	public function is_logined(){
 		$cookie = new Hana_Cookie();
-		$hash = $cookie->get($this->cookieName);
+		$hash = $cookie->get($this->getCookieName());
 		$stmt = $this->db->prepare('select * from mod_account_users where hash = :HASH');
 		$stmt->bindValue(':HASH',$hash);
 		$stmt->execute();
@@ -22,15 +22,16 @@ class Account_Model_Login extends Hana_Model
 		global $request;
 		$data = $request->getPost();
 		global $view;
-		$view->setData('hashName',$this->hashNames['login']);
-		if(Hana_Hash::is_hash($this->hashNames['login'])){
+		$hashName = $this->getHashName('login');
+		$view->setData('hashName',$hashName);
+		if(Hana_Hash::is_hash($hashName)){
 			if($data){
 				$user = $this->get_member($data['user'],$data['password']);
 				if($user){
 					$hash = Hana_Hash::create_hash();
 					$this->update_hash($user['user'],$hash);
 					$cookie = new Hana_Cookie();
-					$cookie->set($this->cookieName,$hash);
+					$cookie->set($this->getCookieName(),$hash);
 					return true;
 				}else{
 					return false;
@@ -44,7 +45,7 @@ class Account_Model_Login extends Hana_Model
 	}
 	public function logout(){
 		$cookie = new Hana_Cookie();
-		$cookie->delete($this->cookieName);
+		$cookie->delete($this->getCookieName());
 	}
 	public function get_member($user,$password){
 		$stmt = $this->db->prepare('select * from mod_account_users where user = :USER and password = :PASSWORD');

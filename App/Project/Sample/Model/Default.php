@@ -1,5 +1,5 @@
 <?php
-class Default_Model_Default extends Hana_Model
+class Sample_Model_Default extends Hana_Model
 {
 	public function test(){
 		return $this->db->getTable('mod_account_users');

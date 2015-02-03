@@ -29,7 +29,7 @@ class Hana_Xml_Reader
 		}
 		$this->data = $data;
 	}
-	protected function parseLoop($reader,$data=array()){}
+	protected function parseLoop($reader,&$data=array()){}
 	protected function getAttributes($reader){
 		$attributes = array();
 		while($reader->moveToNextAttribute()){

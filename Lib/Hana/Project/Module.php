@@ -3,19 +3,24 @@ class Hana_Project_Module extends Hana_Project
 {
 	protected $data = array();
 
+	public function __construct($name){
+		$this->name = $name;
+		$this->request = new Hana_Request();
+	}
 	public function exec($query=null,$data=array(),$viewFlag=true){
 		global $view;
 		$refView = $view;
 		// $view = null;
 		
-		$this->router->setModuleSet($this->name);
+		global $router;
+		$router->setModuleSet($this->name);
 		
 		$urls = $this->request->parseUrl($query);
 		
-		$control = $this->router->getModuleControlSet($urls);
+		$control = $router->getModuleControlSet($urls);
 		
 		if($viewFlag){
-			$viewSet = $this->router->getModuleViewSet($urls);
+			$viewSet = $router->getModuleViewSet($urls);
 			$view = new Hana_View();
 			$view->setPath($viewSet['path']);
 		}

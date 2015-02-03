@@ -1,5 +1,0 @@
-<?xml version="1.0"?>
-<hooks>
-<hook project="Default" name="Settings"></hook>
-<hook module="Account" name="Settings"></hook>
-</hooks>

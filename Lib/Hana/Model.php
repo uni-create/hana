@@ -8,7 +8,11 @@ class Hana_Model extends Hana_Observer
 		$this->setAdapter($this->adapter);
 	}
 	final function setAdapter($adapterName){
-		if($adapterName) $this->db = Hana_Model_Adapters::get($adapterName);
+		if($adapterName){
+			$this->db = Hana_Model_Adapters::get($adapterName);
+		}elseif(defined('ADAPTER')){
+			$this->db = Hana_Model_Adapters::get(ADAPTER);
+		}
 	}
 	final public function getAdapter($adapterName){
 		return Hana_Model_Adapters::get($adapterName);

@@ -10,6 +10,12 @@ class Hana_Router
 	protected $moduleSet = array();
 	
 	public function __construct(){
+		$settings = array();
+		$settings['dir'] = APP.DIRECTORY_SEPARATOR.'Settings';
+		$this->settings = $settings;
+		require($settings['dir'].DIRECTORY_SEPARATOR.'Config.php');
+		
+		
 		$projects = array();
 		$projects['dir'] = APP.DIRECTORY_SEPARATOR.'Project';
 		
@@ -39,11 +45,9 @@ class Hana_Router
 		}
 		$this->module = $module;
 		
-		$settings = array();
-		$settings['dir'] = APP.DIRECTORY_SEPARATOR.'Settings';
-		$this->settings = $settings;
-		
 
+		
+		Hana_Loader::addPath('Adapter',APP.DIRECTORY_SEPARATOR.'Adapter');
 		
 		$this->setStructure();
 		
@@ -74,35 +78,17 @@ class Hana_Router
 	public function getMeta(){
 		return $this->params['target']['meta'];
 	}
-	public function getHookSet(){
+	public function getSet(){
 		$hooks = array();
 		$hs = array();
-		$hookTmp = new Hana_Xml_Hook();
 		$prjSet = $this->projectSet;
-		$atHooks = $this->params['attributes']['hook'];
-		$layoutName = $this->params['attributes']['layout'];
-		foreach($atHooks as $hname){
-			$hpath = $prjSet['layout'].DIRECTORY_SEPARATOR.$layoutName.DIRECTORY_SEPARATOR.'Hook'.DIRECTORY_SEPARATOR.$hname.'.xml';
-			$h = clone $hookTmp;
-			$h->setPath($hpath);
-			$h->init();
-			$hi = $h->getData();
-			while($hi){
-				$hs[] = array_shift($hi);
-			}
-			// $hs = $hs + $h->getData();
+		$this->params['attributes']['project'];
+		$settingPath = $prjSet['dir'].DIRECTORY_SEPARATOR.'Setting'.DIRECTORY_SEPARATOR.'Main.php';
+		if(file_exists($settingPath)){
+			return array('name'=>$this->params['attributes']['project'].'_Setting_Main','path'=>$settingPath);
+		}else{
+			return array();
 		}
-		if($hs){
-			foreach($hs as $key => $h){
-				if($h['module']){
-					$hname = ucfirst($h['module']).'_Hook_'.ucfirst(strtr($h['path'],array('/'=>'_')));
-				}elseif($h['project']){
-					$hname = ucfirst($h['project']).'_Hook_'.ucfirst(strtr($h['path'],array('/'=>'_')));
-				}
-				$hooks[] = array('name'=>$hname,'module'=>$h['module'],'project'=>$h['project']);
-			}
-		}
-		return $hooks;
 	}
 	public function getExceptionSet(){
 		$params = $this->params;

@@ -38,12 +38,6 @@ class Hana_Xml_Structure extends Hana_Xml_Reader
 		$data['paths'] = array();
 		$data['path_nodes'] = array();
 		$this->searchLoop($this->data['Root'],$urls['directories'],$urls['file'],$data);
-		// var_dump($data,$urls,$this->data);
-		if($data['attributes']['hook']){
-			$data['attributes']['hook'] = preg_split('/,/',$data['attributes']['hook']);
-		}else{
-			$data['attributes']['hook'] = array();
-		}
 
 		if(array_key_exists('joint',$data['attributes'])){
 			$joints  = preg_split('/\//',$data['attributes']['joint']);

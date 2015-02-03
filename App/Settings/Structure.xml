@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Directory project="Default" name="Root" layout="Default" frame="Default" outline="Default" theme="default" exception="Exception" hook="Default">
+<Directory project="Default" name="Root" layout="Default" frame="Default" outline="Default" theme="default" exception="Exception">
   <meta title="root"/>
   <File name="Index">
     <meta title="top page" description="top page desctiption" keyword="top page keywords"/>
   </File>
-  <File name="Login" hook="Default"></File>
-  <Directory name="Admin" project="Admin" theme="admin" level="2" hook="Default,Secure">
+  <File name="Login"></File>
+  <Directory name="Admin" project="Admin" theme="admin" level="2">
 	  <File name="Params">
 		<meta title="top page" description="top page desctiption" keyword="top page keywords"/>
 	  </File>
