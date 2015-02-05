@@ -49,7 +49,7 @@ class Hana_Router
 		
 		Hana_Loader::addPath('Adapter',APP.DIRECTORY_SEPARATOR.'Adapter');
 		
-		$this->setStructure();
+		
 		
 		// var_dump($this);
 	}
@@ -57,10 +57,11 @@ class Hana_Router
 		$st = new Hana_Xml_Structure();
 		$st->setPath($this->settings['dir'].DIRECTORY_SEPARATOR.'Structure.xml');
 		$st->init();
-		$this->structure = $st;
+		return $st;
 	}
 	public function init($request){
-		$params = $this->structure->getParams($request->getDefaultUrls());
+		$structure = $this->setStructure();
+		$params = $structure->getParams($request->getDefaultUrls());
 		$projectName = $params['attributes']['project'];
 		$this->projectSet = $this->project['projects'][$projectName];
 		if(empty($params['attributes']['joint'])) $params['attributes']['joint'] = null;
@@ -85,7 +86,7 @@ class Hana_Router
 		$this->params['attributes']['project'];
 		$settingPath = $prjSet['dir'].DIRECTORY_SEPARATOR.'Setting'.DIRECTORY_SEPARATOR.'Main.php';
 		if(file_exists($settingPath)){
-			return array('name'=>$this->params['attributes']['project'].'_Setting_Main','path'=>$settingPath);
+			return array('name'=>'Main','path'=>$settingPath);
 		}else{
 			return array();
 		}
@@ -127,8 +128,9 @@ class Hana_Router
 				}
 			}
 			return array(
+								'project' => $projectName,
 								'module'=>$moduleData['name'],
-								'name' => $moduleData['name'].'_Controller_'.$directories.'Controller',
+								'name' => $directories,
 								'path' => $this->module['modules'][$moduleData['name']].DIRECTORY_SEPARATOR.'Controller'.DIRECTORY_SEPARATOR.$ds.'Controller.php',
 								'action' => $moduleData['urls']['file'],
 								'params' => $ps,
@@ -148,7 +150,8 @@ class Hana_Router
 			$directories = $directories ? join(DIRECTORY_SEPARATOR,$directories) : 'Index';
 			$pm = empty($params['target']['params']) ? array() : $params['target']['params'];
 			return array(
-									'name' => $projectName.'_Controller_'.$ds.'Controller',
+									'project' => $projectName,
+									'name' => $ds,
 									'path' => $prjSet['dir'].DIRECTORY_SEPARATOR.'Controller'.DIRECTORY_SEPARATOR.$directories.'Controller.php',
 									'action' => $params['urls']['file'],
 									'params' => $pm,
@@ -224,7 +227,7 @@ class Hana_Router
 		if(empty($ds)) $ds = array('Index');
 		return array(
 						'path'=>$this->moduleSet['dir'].DIRECTORY_SEPARATOR.'Controller'.DIRECTORY_SEPARATOR.join('_',$ds).'Controller.php',
-						'name'=>$moduleName.'_Controller_'.join('_',$ds).'Controller',
+						'name'=>join('_',$ds),
 						'action'=>$urls['file']
 		);
 	}

@@ -10,8 +10,6 @@ class Hana_Project
 	
 	public function __construct($name){
 		$this->name = $name;
-		$this->request = new Hana_Request();
-		$this->router = new Hana_Router();
 	}
 	public function setData($name,$data){
 		$this->data[$name] = $data;
@@ -25,15 +23,17 @@ class Hana_Project
 		$project = $this;
 
 		global $request;
-		$request = $this->request;
-		
 		global $router;
-		$router = $this->router;
 		
-		$urls = $this->request->parseUrl($this->request->getDefault($query));
-		$this->router->init($this->request);
+		$urls = $request->parseUrl($request->getDefault($query));
+		$router->init($request);
 		
-		$set = $this->router->getSet();
+		$control = $router->getControlSet();
+		// var_dump($control);
+		if(isset($control['project'])) $this->name = $control['project'];
+		
+		$set = $router->getSet();
+		
 
 		if($set){
 			$this->getSet($set['name'])->beforeRoute();
@@ -49,8 +49,7 @@ class Hana_Project
 		$layout->setRoute();
 		$layout->init();
 		
-		$control = $this->router->getControlSet();
-		
+
 		
 		if(!empty($control['path'])){
 			if(file_exists($control['path'])){
@@ -82,19 +81,22 @@ class Hana_Project
 	}
 	public function getController($controllerName){
 		if(empty($this->controllers[$controllerName])){
-			$this->controllers[$controllerName] = new $controllerName();
+			$name = $this->name.'_Controller_'.$controllerName.'Controller';
+			$this->controllers[$controllerName] = new $name();
 		}
 		return $this->controllers[$controllerName];
 	}
 	public function getModel($modelName){
 		if(empty($this->models[$modelName])){
-			$this->models[$modelName] = new $modelName();
+			$name = $this->name.'_Model_'.$modelName;
+			$this->models[$modelName] = new $name();
 		}
 		return $this->models[$modelName];
 	}
 	public function getSet($setName){
 		if(empty($this->sets[$setName])){
-			$this->sets[$setName] = new $setName();
+			$name = $this->name.'_Setting_'.$setName;
+			$this->sets[$setName] = new $name();
 		}
 		return $this->sets[$setName];
 	}

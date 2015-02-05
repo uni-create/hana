@@ -16,7 +16,13 @@ class Hana_Application
 	public function run(){
 		$this->appPath();
 		$this->dataPath();
-		$project = new Hana_Project('root');
+		
+		global $request;
+		$request = new Hana_Request();
+		global $router;
+		$router = new Hana_Router();
+		
+		$project = new Hana_Project(null);
 		$project->exec();
 	}
 	public function appPath($path=null){
@@ -36,9 +42,5 @@ class Hana
 	public static function controller($name){
 		global $project;
 		return $project->getController($name);
-	}
-	public static function model($name){
-		global $project;
-		return $project->getModel($name);
 	}
 }

@@ -7,8 +7,9 @@ class Default_Controller_IndexController extends Hana_Controller
 	}
 	public function Next(){
 		global $view;
+		global $project;
 		$view->setData('desc','overwide meta title of layout & use model database test.');
-		$view->setData('database',Hana::model('Default_Model_Default')->test2());
+		$view->setData('database',$project->getModel('Default')->test2());
 		
 		global $layout;
 		$meta = $layout->getData('meta');
@@ -16,7 +17,7 @@ class Default_Controller_IndexController extends Hana_Controller
 		$layout->setData('meta',$meta);
 	}
 	public function Login(){
-		Hana::module('Admin')->getSet('Admin_Setting_Main')->beforeRoute();
+		Hana::module('Admin')->getSet('Main')->beforeRoute();
 		Hana::module('Account')->exec('Login/Login',array(),false);
 	}
 }

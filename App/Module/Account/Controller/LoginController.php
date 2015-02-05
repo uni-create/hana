@@ -2,7 +2,7 @@
 class Account_Controller_LoginController extends Hana_Controller
 {
 	protected function is_logined(){
-		$loginModel = Hana::module('Account')->getModel('Account_Model_Login');
+		$loginModel = Hana::module('Account')->getModel('Login');
 		return $loginModel->is_logined();
 	}
 	public function Secure(){
@@ -19,7 +19,7 @@ class Account_Controller_LoginController extends Hana_Controller
 		}
 	}
 	public function Login(){
-		$loginModel = Hana::module('Account')->getModel('Account_Model_Login');
+		$loginModel = Hana::module('Account')->getModel('Login');
 		if($loginModel->login()){
 			$redirects = Hana::module('Account')->getData('redirects');
 			$this->redirect($redirects['form']['success']);
@@ -29,7 +29,7 @@ class Account_Controller_LoginController extends Hana_Controller
 		}
 	}
 	public function Logout(){
-		$loginModel = Hana::module('Account')->getModel('Account_Model_Login');
+		$loginModel = Hana::module('Account')->getModel('Login');
 		$loginModel->logout();
 		$redirects = Hana::module('Account')->getData('redirects');
 		$this->redirect($redirects['logout']);

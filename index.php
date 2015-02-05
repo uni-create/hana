@@ -17,4 +17,4 @@ $application->run();
 
 
 $timer->set();
-var_dump($timer->getTime());
+var_dump($timer->getTime(),memory_get_usage());

@@ -5,17 +5,18 @@ class Hana_Project_Module extends Hana_Project
 
 	public function __construct($name){
 		$this->name = $name;
-		$this->request = new Hana_Request();
 	}
 	public function exec($query=null,$data=array(),$viewFlag=true){
 		global $view;
-		$refView = $view;
-		// $view = null;
-		
 		global $router;
+		global $request;
+		
+		
+		$refView = $view;
+
 		$router->setModuleSet($this->name);
 		
-		$urls = $this->request->parseUrl($query);
+		$urls = $request->parseUrl($query);
 		
 		$control = $router->getModuleControlSet($urls);
 		
@@ -40,4 +41,5 @@ class Hana_Project_Module extends Hana_Project
 			return $res;
 		}
 	}
+	public function getModule($moduleName){}
 }
